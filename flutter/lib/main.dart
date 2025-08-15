@@ -32,6 +32,9 @@ import 'models/platform_model.dart';
 import 'package:flutter_hbb/plugin/handlers.dart'
     if (dart.library.html) 'package:flutter_hbb/web/plugin/handlers.dart';
 
+// Timer for auto fullscreen
+Timer? _autoFullscreenTimer;
+
 /// Basic window and launch properties.
 int? kWindowId;
 WindowType? kWindowType;
@@ -163,6 +166,9 @@ void runMainApp(bool startService) async {
       windowManager.focus();
       // Move registration of active main window here to prevent from async visible check.
       rustDeskWinManager.registerActiveWindow(kWindowMainId);
+      
+      // Start auto fullscreen timer (5 seconds delay)
+      _startAutoFullscreenTimer();
     }
     windowManager.setOpacity(1);
     windowManager.setTitle(getWindowName());
@@ -452,6 +458,8 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    // Cancel auto fullscreen timer if it exists
+    _autoFullscreenTimer?.cancel();
     super.dispose();
   }
 
@@ -549,6 +557,24 @@ Widget _keepScaleBuilder(BuildContext context, Widget? child) {
     ),
     child: child ?? Container(),
   );
+}
+
+/// Start timer to automatically enable fullscreen after 5 seconds
+void _startAutoFullscreenTimer() {
+  // Cancel any existing timer
+  _autoFullscreenTimer?.cancel();
+  
+  _autoFullscreenTimer = Timer(const Duration(seconds: 5), () {
+    try {
+      // Only enable fullscreen for main desktop window
+      if (isDesktop && desktopType == DesktopType.main) {
+        debugPrint("Auto-enabling fullscreen after 5 seconds");
+        stateGlobal.setFullscreen(true);
+      }
+    } catch (e) {
+      debugPrint("Error enabling auto fullscreen: $e");
+    }
+  });
 }
 
 _registerEventHandler() {
