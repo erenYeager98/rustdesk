@@ -725,13 +725,11 @@ class _GeneralState extends State<_General> {
                               String? selectedDirectory =
                                   await FilePicker.platform.getDirectoryPath(
                                       initialDirectory: initialDirectory);
-                              if (selectedDirectory != null) {
-                                await bind.mainSetLocalOption(
-                                    key: kOptionVideoSaveDirectory,
-                                    value: selectedDirectory);
-                                setState(() {});
-                              }
-                            },
+                              await bind.mainSetLocalOption(
+                                  key: kOptionVideoSaveDirectory,
+                                  value: selectedDirectory);
+                              setState(() {});
+                                                        },
                       child: Text(translate('Change')))
                   .marginOnly(left: 5),
             ],
@@ -2028,7 +2026,7 @@ class _PluginState extends State<_Plugin> {
 }
 
 class _Printer extends StatefulWidget {
-  const _Printer({super.key});
+  const _Printer();
 
   @override
   State<_Printer> createState() => __PrinterState();

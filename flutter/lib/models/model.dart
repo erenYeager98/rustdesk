@@ -477,17 +477,13 @@ class FfiModel with ChangeNotifier {
             allowedExtensions: ['png'],
             type: FileType.custom,
           );
-          if (outputFile == null) {
-            bind.sessionHandleScreenshot(sessionId: sessionId, action: '2');
-          } else {
-            final res = await bind.sessionHandleScreenshot(
-                sessionId: sessionId, action: '0:$outputFile');
-            if (res.isNotEmpty) {
-              msgBox(sessionId, 'custom-nook-nocancel-hasclose-error',
-                  'Take screenshot', res, '', dialogManager);
-            }
+          final res = await bind.sessionHandleScreenshot(
+              sessionId: sessionId, action: '0:$outputFile');
+          if (res.isNotEmpty) {
+            msgBox(sessionId, 'custom-nook-nocancel-hasclose-error',
+                'Take screenshot', res, '', dialogManager);
           }
-        });
+                });
       }
 
       copyToClipboard() {
@@ -2627,9 +2623,6 @@ class CursorModel with ChangeNotifier {
     } else {
       ByteData? imgBytes =
           await image.toByteData(format: ui.ImageByteFormat.png);
-      if (imgBytes == null) {
-        return false;
-      }
       data = imgBytes.buffer.asUint8List();
     }
     final cache = CursorData(
